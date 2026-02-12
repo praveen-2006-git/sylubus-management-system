@@ -1,0 +1,10 @@
+--- Departments ---
+Name: CSE, ID: 698d4ec58a46bdb8f8f1faca
+
+--- Users ---
+Username: admin, Role: Admin, DeptID: undefined
+Username: student_test, Role: Student, DeptID: 698d4ec58a46bdb8f8f1faca
+Username: PRAVEEN@ADMIN, Role: Admin, DeptID: undefined
+Username: LUKE@GMAIL.COM, Role: Student, DeptID: 698d4ec58a46bdb8f8f1faca
+
+--- Subjects ---
