@@ -1,49 +1,92 @@
-# Syllabus Management System
+# 📘 Syllabus Management System
 
-A web-based application for managing and distributing academic syllabi, built with the MERN stack (MongoDB, Express, React, Node.js).
+The Syllabus Management System is a full-stack MERN application built to simplify how academic syllabi are managed and accessed.
 
-## Features
-- **Admin Dashboard**: Secure login to Create, Read, Update, and Delete syllabi.
-- **Student Portal**: Public access to view and search syllabi by Department and Semester.
-- **Responsive Design**: Built with Tailwind CSS for mobile and desktop.
-- **REST API**: Fully documented API with JWT authentication.
+In many institutions, syllabus information is scattered across PDFs, notice boards, or multiple platforms. This project centralizes everything into one secure system where:
 
-## Project Structure
-- `/client`: React Frontend
-- `/server`: Node/Express Backend
-- `/docs`: Documentation files (or see artifacts)
+*   **Admin** manages subjects and users
+*   **Faculty** views assigned subjects
+*   **Students** access their relevant syllabus
 
-## Prerequisites
-- Node.js (v14+)
-- MongoDB (Local or Atlas URI)
-- Git
+It transforms static document sharing into a structured, role-based digital workflow.
 
-## Getting Started
+## 🚀 What This Project Does
 
-### 1. Setup Backend
-```bash
-cd server
-npm install
-# Create .env file with:
-# PORT=5000
-# MONGO_URI=your_mongodb_connection_string
-# JWT_SECRET=your_secret_key
-npm run dev
-```
+*   Provides secure login using JWT authentication
+*   Implements **Role-Based Access Control** (Admin, Faculty, Student)
+*   Allows Admin to manage subjects and departments
+*   Assigns faculty to subjects
+*   Gives students personalized syllabus access
+*   Protects routes using backend middleware
 
-### 2. Setup Frontend
-```bash
-cd client
-npm install
-npm run dev
-```
+## 🛠 Tech Stack
 
-### 3. Run Tests
-```bash
-cd server
-npm test
-```
+*   **Frontend**: React.js, Tailwind CSS
+*   **Backend**: Node.js, Express.js
+*   **Database**: MongoDB with Mongoose
+*   **Authentication**: JSON Web Token (JWT)
 
-## Documentation
-- [API Documentation](./API_DOCUMENTATION.md)
-- [Project Report](./PROJECT_REPORT.md)
+## 📂 Project Structure
+
+*   `client/`      → React frontend
+*   `server/`      → Express backend
+*   `models/`      → Database schemas
+*   `routes/`      → API endpoints
+*   `controllers/` → Business logic
+*   `middleware/`  → Authentication & role validation
+
+## 🔐 Security Approach
+
+*   Password hashing for secure storage
+*   Stateless JWT authentication
+*   Role-based middleware authorization
+*   Protected API endpoints
+
+## 🛠 How to Run the Project
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/praveen-2006-git/sylubus-management-system.git
+    ```
+
+2.  **Install backend dependencies**
+    ```bash
+    cd server
+    npm install
+    ```
+
+3.  **Install frontend dependencies**
+    ```bash
+    cd ../client
+    npm install
+    ```
+
+4.  **Configure Environment**
+    Create a `.env` file in the `server` folder:
+    ```env
+    MONGO_URI=your_mongodb_connection
+    JWT_SECRET=your_secret_key
+    ```
+
+5.  **Start backend**
+    ```bash
+    npm run dev
+    ```
+
+6.  **Start frontend**
+    ```bash
+    cd ../client
+    npm run dev
+    ```
+
+## 📈 Future Improvements
+
+*   PDF upload for syllabus
+*   Pagination and advanced search
+*   Notification system
+*   Analytics dashboard
+
+## 👨‍💻 Author
+
+**Praveen M**
+MERN Stack Developer
