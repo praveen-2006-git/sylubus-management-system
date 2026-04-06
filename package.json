@@ -2,7 +2,7 @@
   "name": "syllabus-management-system",
   "version": "1.0.0",
   "scripts": {
-    "install": "cd server && npm install",
-    "start": "cd server && npm start"
+    "build": "cd server && npm install",
+    "start": "cd server && node index.js"
   }
 }
