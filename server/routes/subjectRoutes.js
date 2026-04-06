@@ -4,6 +4,7 @@ const multer = require('multer');
 
 const { getSubjects, getSubjectById, createSubject, updateSubject, deleteSubject } = require('../controllers/subjectController');
 const { protect, authorize } = require('../middleware/rbacMiddleware');
+const { validateSubject } = require('../middleware/validationMiddleware');
 
 // Multer Config
 const storage = multer.diskStorage({
@@ -20,8 +21,8 @@ router.get('/', protect, authorize('Admin', 'Faculty', 'Student'), getSubjects);
 router.get('/:id', protect, authorize('Admin', 'Faculty', 'Student'), getSubjectById);
 
 // Admin Only Routes
-router.post('/', protect, authorize('Admin'), upload.single('pdf'), createSubject);
-router.put('/:id', protect, authorize('Admin'), upload.single('pdf'), updateSubject);
+router.post('/', protect, authorize('Admin'), upload.single('pdf'), validateSubject, createSubject);
+router.put('/:id', protect, authorize('Admin'), upload.single('pdf'), validateSubject, updateSubject);
 router.delete('/:id', protect, authorize('Admin'), deleteSubject);
 
 module.exports = router;

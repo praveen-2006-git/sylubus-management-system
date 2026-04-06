@@ -3,11 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
+import toast from 'react-hot-toast';
 
 const AdminLogin = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
@@ -17,9 +17,10 @@ const AdminLogin = () => {
         setIsLoading(true);
         try {
             await login(username, password);
+            toast.success('Welcome to Admin Portal');
             navigate('/admin/dashboard');
         } catch (err) {
-            setError(err.response?.data?.message || 'Login failed');
+            toast.error(err.response?.data?.message || 'Login failed');
         } finally {
             setIsLoading(false);
         }
@@ -40,14 +41,7 @@ const AdminLogin = () => {
                     <p className="text-slate-500">Secure access for administrators</p>
                 </div>
 
-                {error && (
-                    <div className="mb-6 bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-md text-sm flex items-center gap-2">
-                        <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        {error}
-                    </div>
-                )}
+
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>

@@ -20,7 +20,7 @@ const AdminDashboard = () => {
 
     const fetchDepartments = async () => {
         try {
-            const { data } = await api.get('/departments');
+            const { data } = await api.get('/departments');//api
             setDepartments(data);
         } catch (error) {
             console.error("Failed to fetch departments", error);

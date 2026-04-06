@@ -13,7 +13,7 @@ const PrivateRoute = ({ children, roles }) => {
     }
 
     if (!user) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/login" replace />; 
     }
 
     if (roles && !roles.includes(user.role)) {
@@ -27,3 +27,4 @@ const PrivateRoute = ({ children, roles }) => {
 };
 
 export default PrivateRoute;
+ 

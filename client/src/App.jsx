@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { Toaster } from 'react-hot-toast';
 
 import PrivateRoute from './components/PrivateRoute';
 
@@ -15,6 +16,7 @@ function App() {
     return (
         <Router>
             <AuthProvider>
+                <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
                 <div className="min-h-screen flex flex-col font-sans text-slate-100">
                     <div className="flex-grow">
                         <Routes>

@@ -28,8 +28,26 @@ const getSubjects = async (req, res) => {
         } else if (role === 'Admin') {
             // Admin: All (Optional filter by dept)
             if (req.query.department) {
-                query.department = req.query.department;
+                if (req.query.department === 'General') {
+                    query.type = 'General';
+                } else {
+                    const Department = require('../models/Department');
+                    const deptDoc = await Department.findOne({ name: req.query.department });
+                    if (deptDoc) {
+                        query.department = deptDoc._id;
+                    } else {
+                        // Prevent CastError if string doesn't exist by setting an impossible ObjectId
+                        query.department = '000000000000000000000000';
+                    }
+                }
             }
+        }
+
+        if (req.query.search) {
+            query.$or = [
+                { name: { $regex: req.query.search, $options: 'i' } },
+                { code: { $regex: req.query.search, $options: 'i' } }
+            ];
         }
 
         const subjects = await Subject.find(query)
