@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-// const bcrypt = require('bcryptjs'); // Removed for plain text password
+const bcrypt = require('bcryptjs');
 
 // Generate JWT
 const generateToken = (id) => {
@@ -9,9 +9,6 @@ const generateToken = (id) => {
     });
 };
 
-// @desc    Login user (Admin, Faculty, Student)
-// @route   POST /api/auth/login
-// @access  Public
 const login = async (req, res) => {
     const { username, password } = req.body;
     console.log(`[LOGIN ATTEMPT] Username: ${username}, Password: ${password}`);
@@ -32,7 +29,7 @@ const login = async (req, res) => {
             console.log(`[LOGIN] User NOT found`);
         }
 
-        if (user && (password === user.password)) {
+        if (user && (await bcrypt.compare(password, user.password))) {
             res.json({
                 _id: user.id,
                 username: user.username,
