@@ -49,7 +49,7 @@ function App() {
                             <Route
                                 path="/admin/dashboard"
                                 element={
-                                    <PrivateRoute roles={['Admin']}>
+                                    <PrivateRoute roles={['Admin', 'Super Admin']}>
                                         <AdminDashboard />
                                     </PrivateRoute>
                                 }
@@ -59,7 +59,7 @@ function App() {
                             <Route
                                 path="/profile"
                                 element={
-                                    <PrivateRoute roles={['Student', 'Faculty', 'Admin']}>
+                                    <PrivateRoute roles={['Student', 'Faculty', 'Admin', 'Super Admin']}>
                                         <Profile />
                                     </PrivateRoute>
                                 }
@@ -67,7 +67,7 @@ function App() {
                             <Route
                                 path="/syllabus/:id"
                                 element={
-                                    <PrivateRoute roles={['Student', 'Faculty', 'Admin']}>
+                                    <PrivateRoute roles={['Student', 'Faculty', 'Admin', 'Super Admin']}>
                                         <SyllabusDetails />
                                     </PrivateRoute>
                                 }
