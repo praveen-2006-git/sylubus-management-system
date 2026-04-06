@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import api from '../../utils/api';
+import { useAuth } from '../../context/AuthContext';
 
 const UserForm = ({ onSuccess, departments = [] }) => {
+    const { user } = useAuth();
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -126,7 +128,7 @@ const UserForm = ({ onSuccess, departments = [] }) => {
                         >
                             <option value="Student">Student</option>
                             <option value="Faculty">Faculty</option>
-                            <option value="Admin">Admin</option>
+                            {user?.role === 'Super Admin' && <option value="Admin">Admin</option>}
                         </select>
                     </div>
                 </div>

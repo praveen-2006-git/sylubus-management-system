@@ -61,6 +61,11 @@ const createUser = async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
+        // Privilege Check: Only Super Admin can create an Admin
+        if (role === 'Admin' && req.user.role !== 'Super Admin') {
+            return res.status(403).json({ message: 'Only a Super Admin can create an Admin account.' });
+        }
+
         // Hash password
         // const salt = await bcrypt.genSalt(10);
         // const hashedPassword = await bcrypt.hash(password, salt);

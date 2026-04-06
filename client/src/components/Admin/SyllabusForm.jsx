@@ -11,7 +11,8 @@ const SyllabusForm = ({
     editId,
     resetForm,
     file,
-    departments = [] // New prop
+    departments = [], // New prop
+    faculties = []
 }) => {
     return (
         <div className="bg-white border border-slate-200/60 rounded-2xl p-6 shadow-sm sticky top-24 hover:shadow-md transition-shadow">
@@ -40,6 +41,18 @@ const SyllabusForm = ({
                         </select>
                         <input name="semester" placeholder="Sem (1-8)" value={formData.semester} onChange={handleChange} className="input-field rounded-xl" required type="number" min="1" max="8" />
                     </div>
+                </div>
+
+                <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5 tracking-wide">Assign Faculty (Optional)</label>
+                    <select name="facultyAssigned" value={formData.facultyAssigned || ''} onChange={handleChange} className="w-full input-field rounded-xl cursor-pointer h-11 px-3 bg-slate-50 border border-slate-200">
+                        <option value="">Unassigned</option>
+                        {faculties.map(f => (
+                            <option key={f._id} value={f._id}>
+                                {f.fullName} {f.department ? `(${f.department.name})` : ''}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div>

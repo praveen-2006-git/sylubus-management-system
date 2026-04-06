@@ -11,8 +11,10 @@ const SyllabusManager = ({ departments }) => {
         semester: '',
         subjectName: '',
         subjectCode: '',
-        content: ''
+        content: '',
+        facultyAssigned: ''
     });
+    const [faculties, setFaculties] = useState([]);
     const [toast, setToast] = useState(null);
     const [search, setSearch] = useState('');
     const [departmentFilter, setDepartmentFilter] = useState('');
@@ -23,7 +25,17 @@ const SyllabusManager = ({ departments }) => {
 
     useEffect(() => {
         fetchSyllabi();
+        fetchFaculties();
     }, [search, departmentFilter]);
+
+    const fetchFaculties = async () => {
+        try {
+            const { data } = await api.get('/auth/admin/users');
+            setFaculties(data.filter(u => u.role === 'Faculty'));
+        } catch (error) {
+            console.error("Failed to fetch faculty", error);
+        }
+    };
 
     const fetchSyllabi = async () => {
         setIsFetching(true);
@@ -82,6 +94,9 @@ const SyllabusManager = ({ departments }) => {
         // We need to handle 'General' type creation?
         // User didn't ask for that. Leaving as is.
         data.append('type', 'Department');
+        if (formData.facultyAssigned) {
+            data.append('facultyAssigned', formData.facultyAssigned);
+        }
 
         if (file) {
             data.append('pdf', file);
@@ -110,7 +125,7 @@ const SyllabusManager = ({ departments }) => {
     };
 
     const resetForm = () => {
-        setFormData({ department: '', semester: '', subjectName: '', subjectCode: '', content: '' });
+        setFormData({ department: '', semester: '', subjectName: '', subjectCode: '', content: '', facultyAssigned: '' });
         setFile(null);
         setEditId(null);
     };
@@ -121,7 +136,8 @@ const SyllabusManager = ({ departments }) => {
             semester: syllabus.semester,
             subjectName: syllabus.subjectName,
             subjectCode: syllabus.subjectCode,
-            content: syllabus.content
+            content: syllabus.content,
+            facultyAssigned: syllabus.facultyAssigned?._id || syllabus.facultyAssigned || ''
         });
         setEditId(syllabus._id);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -154,6 +170,7 @@ const SyllabusManager = ({ departments }) => {
                     resetForm={resetForm}
                     file={file}
                     departments={departments}
+                    faculties={faculties}
                 />
             </div>
 

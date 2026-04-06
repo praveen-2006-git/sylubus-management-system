@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         // Required for Non-Admins
-        required: function () { return this.role !== 'Admin'; }
+        required: function () { return this.role !== 'Admin' && this.role !== 'Super Admin'; }
     },
     password: {
         type: String,
@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['Admin', 'Faculty', 'Student'],
+        enum: ['Super Admin', 'Admin', 'Faculty', 'Student'],
         default: 'Student',
         required: true
     },
@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Department',
         // Required for Non-Admins
-        required: function () { return this.role !== 'Admin'; }
+        required: function () { return this.role !== 'Admin' && this.role !== 'Super Admin'; }
     },
     // Faculty specific
     facultyRole: {
