@@ -36,8 +36,8 @@ const StudentHome = () => {
     // Frontend Filtering
     const filteredSubjects = subjects.filter(subject => {
         const matchesSearch =
-            subject.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            subject.code.toLowerCase().includes(searchQuery.toLowerCase());
+            (subject.name || subject.subjectName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (subject.code || subject.subjectCode || '').toLowerCase().includes(searchQuery.toLowerCase());
         const matchesType = typeFilter === 'All' || subject.type === typeFilter;
         return matchesSearch && matchesType;
     });
@@ -126,12 +126,12 @@ const StudentHome = () => {
                                         <tr key={subject._id} className="hover:bg-blue-50/30 transition-colors group cursor-default">
                                             <td className="px-6 py-4">
                                                 <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100 group-hover:border-blue-200 transition-colors">
-                                                    {subject.code}
+                                                    {subject.code || subject.subjectCode}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="font-bold text-slate-700 text-sm group-hover:text-blue-700 transition-colors">
-                                                    {subject.name}
+                                                    {subject.name || subject.subjectName}
                                                 </div>
                                                 <div className="text-xs text-slate-400 mt-0.5">
                                                     {subject.department?.name || 'General'}
@@ -146,7 +146,7 @@ const StudentHome = () => {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-sm text-slate-600">
-                                                {subject.facultyAssigned ? (
+                                                {subject.facultyAssigned && subject.facultyAssigned.fullName ? (
                                                     <div className="flex items-center gap-2.5">
                                                         <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-500 group-hover:bg-white group-hover:text-blue-600 group-hover:border-blue-100 transition-colors">
                                                             {subject.facultyAssigned.fullName.charAt(0)}
