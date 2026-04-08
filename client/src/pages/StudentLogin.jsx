@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import Card from '../components/UI/Card';
@@ -11,6 +12,23 @@ const StudentLogin = () => {
     const { login, user } = useAuth();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    const [serverAwake, setServerAwake] = useState(false);
+    const [checkingServer, setCheckingServer] = useState(true);
+
+    useEffect(() => {
+        const pingServer = async () => {
+            try {
+                // Short timeout ping to check if server is already warm
+                await axios.get(import.meta.env.VITE_API_URL || 'http://localhost:5000/api', { timeout: 3000 });
+                setServerAwake(true);
+            } catch (err) {
+                setServerAwake(false);
+            } finally {
+                setCheckingServer(false);
+            }
+        };
+        pingServer();
+    }, []);
 
     useEffect(() => {
         if (user) {
@@ -68,6 +86,19 @@ const StudentLogin = () => {
                         Student Portal
                     </h1>
                     <p className="text-slate-500 font-medium">Sign in to your academic dashboard</p>
+                    
+                    {!checkingServer && !serverAwake && (
+                        <div className="mt-4 p-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-center gap-2">
+                            <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
+                            <span className="text-[10px] font-bold text-amber-700 uppercase tracking-widest">Backend waking up... (Please wait)</span>
+                        </div>
+                    )}
+                    {serverAwake && (
+                        <div className="mt-4 p-2 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-center gap-2">
+                            <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                            <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest">Server Online</span>
+                        </div>
+                    )}
                 </div>
 
 
