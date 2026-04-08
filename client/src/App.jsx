@@ -6,7 +6,6 @@ import PrivateRoute from './components/PrivateRoute';
 
 import StudentHome from './pages/StudentHome';
 import StudentLogin from './pages/StudentLogin';
-import StudentRegister from './pages/StudentRegister';
 import AdminLogin from './pages/AdminLogin';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
@@ -24,7 +23,6 @@ function App() {
                             {/* Public Routes */}
                             <Route path="/" element={<Navigate to="/login" replace />} />
                             <Route path="/login" element={<StudentLogin />} />
-                            <Route path="/register" element={<StudentRegister />} />
                             <Route path="/admin/login" element={<AdminLogin />} />
 
                             {/* Student Routes */}
