@@ -15,7 +15,9 @@ const login = async (req, res) => {
     console.log(`[LOGIN ATTEMPT] Username: ${username}, Password: ${password}`);
 
     try {
-        const user = await User.findOne({ username }).populate('department', 'name');
+        const user = await User.findOne({ 
+            $or: [{ username: username }, { email: username }] 
+        }).populate('department', 'name');
 
         if (user) {
             console.log(`[LOGIN] User found: ${user.username}, Stored Pwd: ${user.password}`);
