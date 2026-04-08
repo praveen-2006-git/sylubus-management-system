@@ -53,6 +53,46 @@ const login = async (req, res) => {
     }
 };
 
+// @desc    Register new student
+// @route   POST /api/auth/register
+// @access  Public
+const registerStudent = async (req, res) => {
+    const { username, email, password, fullName, department } = req.body;
+
+    try {
+        const userExists = await User.findOne({ username });
+
+        if (userExists) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        const user = await User.create({
+            username,
+            email: email || username,
+            password: password, // Store as plain text to match existing auth style
+            role: 'Student',
+            fullName: fullName || username,
+            department
+        });
+
+        if (user) {
+            res.status(201).json({
+                _id: user.id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                fullName: user.fullName,
+                department: user.department,
+                token: generateToken(user._id)
+            });
+        } else {
+            res.status(400).json({ message: 'Invalid user data' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Create new user (Admin use only)
 // @route   POST /api/admin/create-user
 // @access  Private/Admin
@@ -166,6 +206,7 @@ const getUsers = async (req, res) => {
 
 module.exports = {
     login,
+    registerStudent,
     createUser,
     verifyToken,
     updateProfile,

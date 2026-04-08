@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../utils/api';
 import { useNavigate, Link } from 'react-router-dom';
 import Card from '../components/UI/Card';
@@ -6,20 +6,42 @@ import Button from '../components/UI/Button';
 import { useAuth } from '../context/AuthContext';
 
 const StudentRegister = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [formData, setFormData] = useState({
+        username: '',
+        email: '',
+        password: '',
+        fullName: '',
+        department: ''
+    });
+    const [departments, setDepartments] = useState([]);
     const { login } = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    useEffect(() => {
+        const fetchDepartments = async () => {
+            try {
+                const { data } = await api.get('/departments');
+                setDepartments(data);
+            } catch (err) {
+                console.error("Failed to fetch departments", err);
+            }
+        };
+        fetchDepartments();
+    }, []);
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            await api.post('/auth/register', { username, password, role: 'Student' });
+            await api.post('/auth/register', { ...formData, role: 'Student' });
             // Auto login after register
-            await login(username, password);
+            await login(formData.username, formData.password);
             navigate('/');
         } catch (err) {
             setError(err.response?.data?.message || 'Registration failed');
@@ -29,7 +51,7 @@ const StudentRegister = () => {
     };
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center p-4">
+        <div className="min-h-[80vh] flex items-center justify-center p-4 my-8">
             <Card className="max-w-md w-full bg-slate-900 border-slate-800 p-8 shadow-sm">
                 <div className="text-center mb-8">
                     <h1 className="text-2xl font-bold text-white mb-2">
@@ -47,47 +69,75 @@ const StudentRegister = () => {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-1.5">Full Name</label>
+                        <input
+                            type="text"
+                            name="fullName"
+                            className="w-full glass-input p-2.5 bg-slate-950 focus:ring-violet-600/50 text-white border border-slate-800 rounded-lg"
+                            value={formData.fullName}
+                            onChange={handleChange}
+                            placeholder="John Doe"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            className="w-full glass-input p-2.5 bg-slate-950 focus:ring-violet-600/50 text-white border border-slate-800 rounded-lg"
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="email@example.com"
+                            required
+                        />
+                    </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-300 mb-1.5">Username</label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg className="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </div>
-                            <input
-                                type="text"
-                                className="w-full glass-input pl-10 p-2.5 bg-slate-950 focus:ring-violet-600/50"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Choose a username"
-                                required
-                            />
-                        </div>
+                        <input
+                            type="text"
+                            name="username"
+                            className="w-full glass-input p-2.5 bg-slate-950 focus:ring-violet-600/50 text-white border border-slate-800 rounded-lg"
+                            value={formData.username}
+                            onChange={handleChange}
+                            placeholder="Choose a username"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-1.5">Department</label>
+                        <select
+                            name="department"
+                            value={formData.department}
+                            onChange={handleChange}
+                            required
+                            className="w-full glass-input p-2.5 bg-slate-950 focus:ring-violet-600/50 text-white border border-slate-800 rounded-lg cursor-pointer"
+                        >
+                            <option value="">Select Department</option>
+                            {departments.map(dept => (
+                                <option key={dept._id} value={dept._id}>{dept.name}</option>
+                            ))}
+                        </select>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg className="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
-                            </div>
-                            <input
-                                type="password"
-                                className="w-full glass-input pl-10 p-2.5 bg-slate-950 focus:ring-violet-600/50"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Create a password"
-                                required
-                            />
-                        </div>
+                        <input
+                            type="password"
+                            name="password"
+                            className="w-full glass-input p-2.5 bg-slate-950 focus:ring-violet-600/50 text-white border border-slate-800 rounded-lg"
+                            value={formData.password}
+                            onChange={handleChange}
+                            placeholder="Create a password"
+                            required
+                        />
                     </div>
+                    
                     <Button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full py-2.5 bg-violet-600 hover:bg-violet-700 font-semibold shadow-sm"
+                        className="w-full py-2.5 mt-2 bg-violet-600 hover:bg-violet-700 font-semibold shadow-sm rounded-lg text-white"
                     >
                         {isLoading ? 'Creating Account...' : 'Sign Up'}
                     </Button>

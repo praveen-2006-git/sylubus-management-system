@@ -9,7 +9,7 @@ const UserForm = ({ onSuccess, departments = [] }) => {
         email: '',
         password: '',
         fullName: '',
-        role: 'Student',
+        role: 'Faculty',
         department: '',
         facultyRole: ''
     });
@@ -55,7 +55,7 @@ const UserForm = ({ onSuccess, departments = [] }) => {
                 email: '',
                 password: '',
                 fullName: '',
-                role: 'Student',
+                role: 'Faculty',
                 department: '',
                 facultyRole: ''
             });
@@ -126,7 +126,6 @@ const UserForm = ({ onSuccess, departments = [] }) => {
                             onChange={handleChange}
                             className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 font-bold text-slate-700 h-10"
                         >
-                            <option value="Student">Student</option>
                             <option value="Faculty">Faculty</option>
                             {user?.role === 'Super Admin' && <option value="Admin">Admin</option>}
                         </select>
