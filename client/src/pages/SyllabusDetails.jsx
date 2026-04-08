@@ -2,13 +2,18 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import StudentHeader from '../components/StudentHeader';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const SyllabusDetails = () => {
+    const { user } = useAuth();
     const { id } = useParams();
     const navigate = useNavigate();
     const [syllabus, setSyllabus] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [actionLoading, setActionLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isEnrolled, setIsEnrolled] = useState(false);
 
     const getNftUrl = (path) => {
         const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
@@ -20,6 +25,9 @@ const SyllabusDetails = () => {
             try {
                 const { data } = await api.get(`/subjects/${id}`);
                 setSyllabus(data);
+                if (data.isUserEnrolled !== undefined) {
+                    setIsEnrolled(data.isUserEnrolled);
+                }
             } catch (err) {
                 console.error(err);
                 setError('Failed to load syllabus details.');
@@ -29,6 +37,19 @@ const SyllabusDetails = () => {
         };
         fetchSyllabus();
     }, [id]);
+
+    const handleEnrollment = async () => {
+        setActionLoading(true);
+        try {
+            const { data } = await api.post(`/subjects/${id}/enroll`);
+            setIsEnrolled(data.enrolled);
+            toast.success(data.message);
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Failed to update enrollment');
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
     if (loading) return (
         <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
@@ -101,9 +122,28 @@ const SyllabusDetails = () => {
                         <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3 leading-tight tracking-tight">
                             {syllabus.name}
                         </h1>
-                        <p className="text-slate-500 font-medium">
-                            <span className="text-slate-400">Faculty:</span> {syllabus.facultyAssigned?.fullName || 'Not Assigned'}
-                        </p>
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <p className="text-slate-500 font-medium">
+                                <span className="text-slate-400">Faculty:</span> {syllabus.facultyAssigned?.fullName || 'Not Assigned'}
+                            </p>
+                            
+                            {user?.role === 'Student' && (
+                                <button 
+                                    onClick={handleEnrollment}
+                                    disabled={actionLoading}
+                                    className={`px-6 py-2.5 rounded-lg font-bold shadow-sm transition-all flex items-center gap-2 ${
+                                        isEnrolled 
+                                        ? 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200' 
+                                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                                    }`}
+                                >
+                                    {actionLoading ? (
+                                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                    ) : null}
+                                    {isEnrolled ? 'Unenroll' : 'Enroll in Subject'}
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
@@ -122,6 +162,46 @@ const SyllabusDetails = () => {
                                     {syllabus.content || "No outline provided for this syllabus."}
                                 </p>
                             </div>
+
+                            {/* Enrolled Students Roster (Faculty/Admin Only) */}
+                            {(user?.role === 'Faculty' || user?.role === 'Admin') && (
+                                <div className="mt-8">
+                                    <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                        <span className="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center">
+                                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                            </svg>
+                                        </span>
+                                        Enrolled Students ({syllabus.enrolledStudents?.length || 0})
+                                    </h3>
+                                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                                        {syllabus.enrolledStudents && syllabus.enrolledStudents.length > 0 ? (
+                                            <div className="divide-y divide-slate-100 max-h-96 overflow-y-auto">
+                                                {syllabus.enrolledStudents.map(student => (
+                                                    <div key={student._id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm">
+                                                                {student.fullName?.charAt(0).toUpperCase() || 'S'}
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-bold text-slate-800 text-sm">{student.fullName}</p>
+                                                                <p className="text-xs text-slate-500">{student.email}</p>
+                                                            </div>
+                                                        </div>
+                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-slate-100 px-2 py-1 rounded-md">
+                                                            ID: {student.username}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="p-8 text-center text-slate-500 text-sm font-medium">
+                                                No students currently enrolled.
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Sidebar / Actions */}

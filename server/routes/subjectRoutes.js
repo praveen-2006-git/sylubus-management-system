@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 
-const { getSubjects, getSubjectById, createSubject, updateSubject, deleteSubject } = require('../controllers/subjectController');
+const { getSubjects, getSubjectById, createSubject, updateSubject, deleteSubject, enrollSubject } = require('../controllers/subjectController');
 const { protect, authorize } = require('../middleware/rbacMiddleware');
 const { validateSubject } = require('../middleware/validationMiddleware');
 
@@ -19,6 +19,8 @@ const upload = multer({ storage });
 
 router.get('/', protect, authorize('Admin', 'Faculty', 'Student'), getSubjects);
 router.get('/:id', protect, authorize('Admin', 'Faculty', 'Student'), getSubjectById);
+
+router.post('/:id/enroll', protect, authorize('Student'), enrollSubject);
 
 // Admin Only Routes
 router.post('/', protect, authorize('Admin'), upload.single('pdf'), validateSubject, createSubject);

@@ -83,8 +83,12 @@ const getSubjectById = async (req, res) => {
             if (subjectDeptId !== department.toString() && subject.type !== 'General') {
                 return res.status(403).json({ message: 'Not authorized to view this subject' });
             }
-            // Students cannot view enrolled list
-            subject.enrolledStudents = undefined;
+            // Pass a boolean so student knows if they are enrolled
+            const isEnrolled = subject.enrolledStudents.some(s => s._id.toString() === _id.toString() || s.toString() === _id.toString());
+            const subjectObj = subject.toObject();
+            subjectObj.enrolledStudents = undefined; // Don't expose roster
+            subjectObj.isUserEnrolled = isEnrolled;
+            return res.json(subjectObj);
         } else if (role === 'Faculty') {
             if (facultyRole === 'HOD') {
                 // HOD: Can view if subject is in their department
@@ -100,6 +104,7 @@ const getSubjectById = async (req, res) => {
             }
         }
 
+        // Send response for non-student
         res.json(subject);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -177,10 +182,49 @@ const deleteSubject = async (req, res) => {
     }
 };
 
+// @desc    Toggle Enrollment in a subject
+// @route   POST /api/subjects/:id/enroll
+// @access  Private (Student)
+const enrollSubject = async (req, res) => {
+    try {
+        const subject = await Subject.findById(req.params.id);
+        if (!subject) {
+            return res.status(404).json({ message: 'Subject not found' });
+        }
+
+        const userId = req.user._id;
+        const subjectDeptId = subject.department?.toString();
+        const userDeptId = req.user.department?.toString();
+
+        // Enforce department access rules
+        if (subjectDeptId !== userDeptId && subject.type !== 'General') {
+            return res.status(403).json({ message: 'Not authorized to enroll in this subject' });
+        }
+
+        const isEnrolled = subject.enrolledStudents.some(id => id.toString() === userId.toString());
+
+        if (isEnrolled) {
+            subject.enrolledStudents = subject.enrolledStudents.filter(id => id.toString() !== userId.toString());
+        } else {
+            subject.enrolledStudents.push(userId);
+        }
+
+        await subject.save();
+
+        res.json({ 
+            message: isEnrolled ? 'Unenrolled successfully' : 'Enrolled successfully', 
+            enrolled: !isEnrolled 
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getSubjects,
     getSubjectById,
     createSubject,
     updateSubject,
-    deleteSubject
+    deleteSubject,
+    enrollSubject
 };
