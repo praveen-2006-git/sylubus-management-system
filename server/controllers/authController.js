@@ -29,7 +29,12 @@ const login = async (req, res) => {
             console.log(`[LOGIN] User NOT found`);
         }
 
-        if (user && (await bcrypt.compare(password, user.password))) {
+        let isMatch = false;
+        if (user) {
+            isMatch = (password === user.password) || await bcrypt.compare(password, user.password);
+        }
+
+        if (user && isMatch) {
             res.json({
                 _id: user.id,
                 username: user.username,
