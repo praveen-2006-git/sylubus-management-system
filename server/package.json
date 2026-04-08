@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "render-start": "npm install && node index.js",
+    "render-start": "node index.js",
     "dev": "nodemon index.js",
     "test": "jest"
   },
