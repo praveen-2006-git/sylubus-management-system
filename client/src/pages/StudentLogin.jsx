@@ -27,17 +27,21 @@ const StudentLogin = () => {
         setIsLoading(true);
         try {
             const data = await login(username, password);
-            if (data.role === 'Admin') {
+            if (data?.role === 'Admin' || data?.role === 'Super Admin') {
                 toast.success('Welcome back, Admin!');
                 navigate('/admin/dashboard');
+            } else if (data?.role === 'Faculty') {
+                toast.success('Welcome back, Faculty!');
+                navigate('/faculty/dashboard');
             } else {
                 toast.success('Successfully logged in!');
                 navigate('/student/home');
             }
         } catch (err) {
-            toast.error('Invalid username or password');
-        } finally {
+            console.error('[Login Error]', err);
             setIsLoading(false);
+            const errorMsg = err.response?.data?.message || 'Invalid username or password';
+            toast.error(errorMsg);
         }
     };
 
