@@ -6,6 +6,7 @@ import UserForm from '../components/Admin/UserForm';
 import UserList from '../components/Admin/UserList';
 import DepartmentManager from '../components/Admin/DepartmentManager';
 import SyllabusManager from '../components/Admin/SyllabusManager';
+import ProfileManagementCard from '../components/ProfileManagementCard';
 
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
@@ -81,6 +82,12 @@ const AdminDashboard = () => {
                     >
                         Departments
                     </button>
+                    <button
+                        onClick={() => setActiveTab('profile')}
+                        className={`px-4 py-2 font-bold text-sm rounded-lg transition-all ${activeTab === 'profile' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:bg-slate-100'}`}
+                    >
+                        My Profile
+                    </button>
                 </div>
 
                 {/* Content */}
@@ -107,6 +114,12 @@ const AdminDashboard = () => {
 
                     {activeTab === 'subjects' && (
                         <SyllabusManager departments={departments} />
+                    )}
+
+                    {activeTab === 'profile' && (
+                        <div className="pt-4">
+                            <ProfileManagementCard />
+                        </div>
                     )}
                 </div>
             </div>

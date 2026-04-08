@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import StudentHeader from '../components/StudentHeader';
+import ProfileManagementCard from '../components/ProfileManagementCard';
 
 const StudentHome = () => {
     const navigate = useNavigate();
@@ -11,6 +12,7 @@ const StudentHome = () => {
     const [typeFilter, setTypeFilter] = useState('All'); // 'All', 'Department', 'General'
     const [subjects, setSubjects] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('subjects');
 
     // Fetch Subjects from API
     useEffect(() => {
@@ -47,9 +49,27 @@ const StudentHome = () => {
             <StudentHeader />
 
             <main className="flex-1 container mx-auto px-6 py-8">
-                {/* Filters Section */}
-                <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/60 mb-8 flex flex-wrap items-center gap-4 transition-all hover:shadow-md">
-                    <div className="flex-1 min-w-[200px]">
+                {/* Tabs */}
+                <div className="flex space-x-2 mb-6 border-b border-slate-200 pb-1 overflow-x-auto">
+                    <button
+                        onClick={() => setActiveTab('subjects')}
+                        className={`px-4 py-2 font-bold text-sm rounded-lg transition-all ${activeTab === 'subjects' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-100'}`}
+                    >
+                        Syllabus Browser
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('profile')}
+                        className={`px-4 py-2 font-bold text-sm rounded-lg transition-all ${activeTab === 'profile' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-100'}`}
+                    >
+                        My Profile
+                    </button>
+                </div>
+
+                {activeTab === 'subjects' && (
+                    <>
+                        {/* Filters Section */}
+                        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/60 mb-8 flex flex-wrap items-center gap-4 transition-all hover:shadow-md">
+                            <div className="flex-1 min-w-[200px]">
                         {/* Search Input */}
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-600">
@@ -188,6 +208,14 @@ const StudentHome = () => {
                         </table>
                     </div>
                 </div>
+                    </>
+                )}
+
+                {activeTab === 'profile' && (
+                    <div className="pt-2">
+                        <ProfileManagementCard />
+                    </div>
+                )}
             </main>
         </div>
     );
