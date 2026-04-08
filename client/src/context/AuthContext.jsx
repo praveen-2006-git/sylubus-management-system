@@ -18,9 +18,13 @@ export const AuthProvider = ({ children }) => {
                     setUser(data);
                 } catch (error) {
                     console.error("Token verification failed:", error);
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('userInfo');
-                    setUser(null);
+                    // If it's a timeout or network error, don't log them out yet
+                    // Only log out if the server actually rejects the token (401/403)
+                    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('userInfo');
+                        setUser(null);
+                    }
                 }
             }
             setLoading(false);

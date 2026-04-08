@@ -40,8 +40,15 @@ const StudentLogin = () => {
         } catch (err) {
             console.error('[Login Error]', err);
             setIsLoading(false);
-            const errorMsg = err.response?.data?.message || 'Invalid username or password';
-            toast.error(errorMsg);
+            
+            if (err.code === 'ECONNABORTED') {
+                toast.error('Server Timeout: The backend is taking too long to wake up. Please wait 1 minute and try again.');
+            } else if (!err.response) {
+                toast.error('Network Error: Cannot reach the server. Please check your internet or wait for the server to restart.');
+            } else {
+                const errorMsg = err.response?.data?.message || 'Invalid username or password';
+                toast.error(errorMsg);
+            }
         }
     };
 
