@@ -79,7 +79,8 @@ const getSubjectById = async (req, res) => {
 
         // Access Control Check
         if (role === 'Student') {
-            if (subject.department.toString() !== department.toString() && subject.type !== 'General') {
+            const subjectDeptId = subject.department && subject.department._id ? subject.department._id.toString() : subject.department?.toString();
+            if (subjectDeptId !== department.toString() && subject.type !== 'General') {
                 return res.status(403).json({ message: 'Not authorized to view this subject' });
             }
             // Students cannot view enrolled list
