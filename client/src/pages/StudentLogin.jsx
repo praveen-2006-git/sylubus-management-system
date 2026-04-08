@@ -116,14 +116,7 @@ const StudentLogin = () => {
                     </Button>
                 </form>
 
-                <div className="mt-8 text-center pt-6 border-t border-slate-100">
-                    <p className="text-slate-500 text-sm">
-                        Don't have an account?{' '}
-                        <Link to="/register" className="text-blue-700 font-bold hover:text-blue-800 hover:underline transition-colors">
-                            Create account
-                        </Link>
-                    </p>
-                </div>
+
             </div>
         </div>
     );
