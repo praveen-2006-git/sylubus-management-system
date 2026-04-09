@@ -150,8 +150,13 @@ const StudentHome = () => {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <div className="font-bold text-slate-700 text-sm group-hover:text-blue-700 transition-colors">
+                                                <div className="flex items-center gap-2 font-bold text-slate-700 text-sm group-hover:text-blue-700 transition-colors">
                                                     {subject.name || subject.subjectName}
+                                                    {subject.isUserEnrolled && (
+                                                        <span className="px-1.5 py-0.5 rounded text-[9px] bg-emerald-100 text-emerald-700 border border-emerald-200 uppercase tracking-tighter shadow-sm">
+                                                            Enrolled
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 <div className="text-xs text-slate-400 mt-0.5">
                                                     {subject.department?.name || 'General'}

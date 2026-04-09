@@ -53,9 +53,23 @@ const getSubjects = async (req, res) => {
         const subjects = await Subject.find(query)
             .populate('department', 'name')
             .populate('facultyAssigned', 'fullName')
+            .select('+enrolledStudents') 
             .sort({ createdAt: -1 });
 
-        res.json(subjects);
+        const formattedSubjects = subjects.map(subject => {
+            const subjObj = subject.toObject();
+            
+            // For students, check if they are enrolled
+            if (role === 'Student') {
+                subjObj.isUserEnrolled = subject.enrolledStudents?.some(id => id.toString() === _id.toString());
+            }
+            
+            subjObj.enrolledCount = subject.enrolledStudents?.length || 0;
+            subjObj.enrolledStudents = undefined; 
+            return subjObj;
+        });
+
+        res.json(formattedSubjects);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
