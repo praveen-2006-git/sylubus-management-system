@@ -83,7 +83,8 @@ const getSubjectById = async (req, res) => {
         const subject = await Subject.findById(req.params.id)
             .populate('department', 'name')
             .populate('facultyAssigned', 'fullName')
-            .populate('enrolledStudents', 'username fullName email'); // Populate students for Faculty/Admin
+            .populate('enrolledStudents', 'username fullName email')
+            .select('+enrolledStudents'); // Ensure enrolledStudents is explicitly selected
 
         if (!subject) {
             return res.status(404).json({ message: 'Subject not found' });
@@ -104,15 +105,18 @@ const getSubjectById = async (req, res) => {
             subjectObj.isUserEnrolled = isEnrolled;
             return res.json(subjectObj);
         } else if (role === 'Faculty') {
+            const subjectDeptId = subject.department?._id?.toString() || subject.department?.toString();
+            const userDeptId = department?.toString();
+
             if (facultyRole === 'HOD') {
                 // HOD: Can view if subject is in their department
-                if (subject.department._id.toString() !== department.toString() && subject.department.toString() !== department.toString()) {
+                if (subjectDeptId !== userDeptId) {
                     return res.status(403).json({ message: 'Not authorized: Outside Department' });
                 }
             } else {
                 // Professor: Can view ONLY if assigned
-                const isAssigned = subject.facultyAssigned?._id?.toString() === _id.toString() || subject.facultyAssigned?.toString() === _id.toString();
-                if (!isAssigned) {
+                const assignedId = subject.facultyAssigned?._id?.toString() || subject.facultyAssigned?.toString();
+                if (assignedId !== _id.toString()) {
                     return res.status(403).json({ message: 'Not authorized: Not assigned to this subject' });
                 }
             }
