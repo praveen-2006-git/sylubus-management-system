@@ -15,8 +15,26 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet());
 app.use(express.json());
 app.use(mongoSanitize());
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://sylubus-management-system-ynr2.vercel.app',
+    process.env.CLIENT_URL
+].filter(Boolean);
+
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin) return callback(null, true);
+        
+        const isAllowed = allowedOrigins.includes(origin) || 
+                         (origin.startsWith('https://sylubus-management-system') && origin.endsWith('.vercel.app'));
+        
+        if (isAllowed) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
 }));
 // Serve uploaded files statically

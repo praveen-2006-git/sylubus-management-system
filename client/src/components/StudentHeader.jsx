@@ -29,7 +29,7 @@ const StudentHeader = () => {
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
                         <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 uppercase tracking-wider">
-                            Student | Read-Only
+                            {user?.role === 'Admin' ? 'Administrator' : `${user?.role} | ${user?.department?.name || 'General'}`}
                         </span>
                         <button
                             onClick={logout}
