@@ -49,9 +49,24 @@ const departmentRoutes = require('./routes/departmentRoutes');
 connectDB();
 
 // Routes
+app.get('/api', (req, res) => {
+    res.json({ 
+        status: 'success', 
+        message: 'Syllabus Management API is active' 
+    });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/subjects', subjectRoutes);
 app.use('/api/departments', departmentRoutes);
+
+// Catch-all for undefined API routes
+app.use('/api/*', (req, res) => {
+    res.status(404).json({ 
+        status: 'error', 
+        message: `Endpoint ${req.originalUrl} not found on this server` 
+    });
+});
 
 // Basic Route
 app.get('/', (req, res) => {
